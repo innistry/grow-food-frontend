@@ -1,8 +1,9 @@
 <template>
-    <b-form-group id="input-group-3" label="Food:" label-for="input-3">
+    <b-form-group label="Тариф" label-for="input-tariff">
         <b-form-select
-                id="input-3"
-                v-model="form.food"
+                id="input-tariff"
+                :value="value"
+                v-on="$listeners"
                 :options="options"
                 required
         ></b-form-select>
@@ -21,23 +22,25 @@
     export async function fetch() {
         if (!state.loaded) {
             let response = await axios.get('api/tariffs')
-            state.options = response.data
+            state.options = response.data.data
             state.loaded = true
         }
     }
 
     export default {
         props: {
-
+            value: {
+                type: Object,
+                default: () => ({})
+            }
         },
 
         computed: {
             options() {
-                return state.options
-            },
-
-            loading() {
-                return state.loaded === false
+                return state.loaded ? state.options.map((tariff) => ({
+                    value: tariff,
+                    text: tariff.name
+                })) : []
             }
         },
 
